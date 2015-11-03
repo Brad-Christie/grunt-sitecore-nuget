@@ -1,0 +1,25 @@
+{
+  "package": {
+    "metadata": {
+      "id": "Sitecore.Mvc",
+      "description": "Sitecore.Mvc",
+      "tags": "sitecore mvc",
+      "dependencies": {
+        "dependency": [
+          {
+            "@id": "Sitecore.Mvc",
+            "@version": "<%= ver %>"
+          }
+        ]
+      }
+    },
+    "files": {
+      "file": [
+        {
+          "@src": "<%= src %>\\bin\\Sitecore.Mvc.Analytics.dll",
+          "@target": "lib/net45"
+        }
+      ]
+    }
+  }
+}

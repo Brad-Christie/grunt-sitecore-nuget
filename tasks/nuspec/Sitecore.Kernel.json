@@ -1,0 +1,21 @@
+{
+  "package": {
+    "metadata": {
+      "id": "Sitecore.Kernel",
+      "description": "Sitecore.Kernel",
+      "tags": "sitecore kernel"
+    },
+    "files": {
+      "file": [
+        {
+          "@src": "<%= src %>\\bin\\Sitecore.Kernel.dll",
+          "@target": "lib/net45"
+        },
+        {
+          "@src": "<%= src %>\\bin\\Sitecore.Kernel.xml",
+          "@target": "lib/net45"
+        }
+      ]
+    }
+  }
+}

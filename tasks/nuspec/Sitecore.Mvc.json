@@ -1,0 +1,29 @@
+{
+  "package": {
+    "metadata": {
+      "id": "Sitecore.Mvc",
+      "description": "Sitecore.Mvc",
+      "tags": "sitecore mvc",
+      "dependencies": {
+        "dependency": [
+          {
+            "@id": "Sitecore.Kernel",
+            "@version": "<%= ver %>"
+          },
+          {
+            "@id": "Microsoft.AspNet.Mvc",
+            "@version": "5.2.3"
+          }
+        ]
+      }
+    },
+    "files": {
+      "file": [
+        {
+          "@src": "<%= src %>\\bin\\Sitecore.Mvc.dll",
+          "@target": "lib/net45"
+        }
+      ]
+    }
+  }
+}

@@ -1,4 +1,4 @@
-# scNuget
+# grunt-sitecore-nuget
 
 > NuGet package builder for Sitecore instances.
 
@@ -8,13 +8,13 @@ This plugin requires Grunt `~0.4.5`
 If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins. Once you're familiar with that process, you may install this plugin with this command:
 
 ```shell
-npm install scNuget --save-dev
+npm install grunt-sitecore-nuget --save-dev
 ```
 
 Once the plugin has been installed, it may be enabled inside your Gruntfile with this line of JavaScript:
 
 ```js
-grunt.loadNpmTasks('scNuget');
+grunt.loadNpmTasks('grunt-sitecore-nuget');
 ```
 
 ## The "scNuget" task
@@ -37,36 +37,52 @@ grunt.initConfig({
 
 ### Options
 
-#### options.separator
+#### options.src
 Type: `String`
-Default value: `',  '`
+Default value: `''`
 
-A string value that is used to do something with whatever.
+Source path to your Sitecore instance (where libraries will be pulled from). This should be the `\Website` root.
 
-#### options.punctuation
+#### options.dest
 Type: `String`
-Default value: `'.'`
+Default value: `'sitecore'`
 
-A string value that is used to do something else with whatever else.
+Destination path where you want the generated NuGet packages placed.
+
+### options.ver
+Type: `String`
+Default value: `'0.1.0-beta'`
+
+Version to use when generating the nuget packages. Must follow Semantic Versioning guidelines.
+
+### options.pkgs
+Type: `Array`
+Default value: `[ 'Sitecore.Kernel', 'Sitecore.Analytics', 'Sitecore.Mvc', 'Sitecore.Mvc.Analytics' ]`
+
+Specify a list of specific packages to generate. This can be used to limit which packages are generated (by exempting those you wish to skip).
 
 ### Usage Examples
 
-#### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
+#### Simple
+In this example, we generate the NuGet packages against the local Sitecore v8.1 (RTM) and place them in the project's `sitecore` directory.
 
 ```js
 grunt.initConfig({
   scNuget: {
     options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
+    sc81rtm: {
+      options: {
+        src: '/inetpub/wwwroot/sc81rev151003/Website',
+        dest: 'packages',
+        ver: '8.1.0.151003'
+      }
+    }
   },
 });
 ```
 
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
+#### Custom
+In this example, we are only looking for the
 
 ```js
 grunt.initConfig({

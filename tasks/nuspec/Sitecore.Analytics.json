@@ -1,0 +1,25 @@
+{
+  "package": {
+    "metadata": {
+      "id": "Sitecore.Analytics",
+      "description": "Sitecore.Analytics",
+      "tags": "sitecore analytics",
+      "dependencies": {
+        "dependency": [
+          {
+            "@id": "Sitecore.Kernel",
+            "@version": "<%= ver %>"
+          }
+        ]
+      }
+    },
+    "files": {
+      "file": [
+        {
+          "@src": "<%= src %>\\bin\\Sitecore.Analytics.dll",
+          "@target": "lib/net45"
+        }
+      ]
+    }
+  }
+}

@@ -30,22 +30,20 @@ module.exports = function(grunt) {
 
     // Configuration to be run (and then tested).
     scNuget: {
-      default_options: {
+      options: {
+        src: 'test/sitecore',
+        dest: 'tmp'
+      },
+      sc81rti: {
         options: {
-        },
-        files: {
-          'tmp/default_options': ['test/fixtures/testing', 'test/fixtures/123']
+          ver: '8.1.150819'
         }
       },
-      custom_options: {
+      sc81rtm: {
         options: {
-          separator: ': ',
-          punctuation: ' !!!'
-        },
-        files: {
-          'tmp/custom_options': ['test/fixtures/testing', 'test/fixtures/123']
+          ver: '8.1.151003'
         }
-      }
+      },
     },
 
     // Unit tests.
@@ -62,6 +60,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-nodeunit');
+  grunt.loadNpmTasks('grunt-nuget');
 
   // Whenever the "test" task is run, first clean the "tmp" dir, then run this
   // plugin's task(s), then test the result.
