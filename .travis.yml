@@ -1,0 +1,6 @@
+sudo: false
+language: node_js
+node_js:
+  - latest
+  - '0.10.0'
+  - '0.8.0'
