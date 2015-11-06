@@ -43,7 +43,7 @@ module.exports = function(grunt) {
         options: {
           ver: '8.1.151003'
         }
-      },
+      }
     },
 
     // Unit tests.

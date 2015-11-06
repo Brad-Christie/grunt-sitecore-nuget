@@ -11,19 +11,25 @@
 module.exports = function(grunt) {
 
   var _ = require('lodash'),
+      async = require('async'),
+      fs = require('fs'),
       path = require('path'),
       semver = require('semver'),
-      xmlbuilder = require('xmlbuilder'),
-      nuspecDir = path.join(__dirname, 'nuspec');
+      xmlbuilder = require('xmlbuilder');
+
+  var nuspecDir = path.join(__dirname, 'nuspec'),
+      nugetExe = path.join(__dirname, '../bin/nuget-2.8.60717.93.exe');
 
   grunt.registerMultiTask('scNuget', 'NuGet package builder for Sitecore instances.', function() {
 
-    var options = this.options({
-      src: '',
-      dest: 'sitecore',
-      ver: '0.1.0-beta',
-      pkgs: [ 'Sitecore.Kernel', 'Sitecore.Analytics', 'Sitecore.Mvc', 'Sitecore.Mvc.Analytics' ]
-    });
+    var done = this.async(),
+        options = this.options({
+          src: '',
+          dest: 'sitecore',
+          ver: '0.1.0-beta',
+          pkgs: [ 'Sitecore.Kernel', 'Sitecore.Analytics', 'Sitecore.Mvc', 'Sitecore.Mvc.Analytics' ],
+          nuget: nugetExe
+        });
 
     // validation
     if (process.platform !== 'win32') {
@@ -62,15 +68,20 @@ module.exports = function(grunt) {
     }
 
     // process
-    var nuspecBase = grunt.file.readJSON(path.join(nuspecDir, 'base.json'));
-    options.pkgs.forEach(function(pkgName) {
+    var nuspecPath = path.join(nuspecDir, 'base.json');
+    if (!grunt.file.exists(nuspecPath)) {
+      grunt.warn('Base template for packages cannot be found.');
+    }
+    var nuspecBase = grunt.file.readJSON(nuspecPath);
+    async.each(options.pkgs, function(pkgName, callback) {
+      grunt.log.writeln('Generating ' + pkgName + '.nupkg');
       var nuspecPath = path.join(nuspecDir, pkgName + '.json');
       if (grunt.file.exists(nuspecPath)) {
         var nuspecPkg = grunt.file.readJSON(nuspecPath),
             nuspecCombined = _.merge({}, nuspecBase, nuspecPkg),
             templateData = {
-              src: options.src.replace(/\\/g, '\\\\'),
-              dest: options.dest.replace(/\\/g, '\\\\'),
+              src: '',//options.src.replace(/\\/g, '\\\\'),
+              dest: '',//options.dest.replace(/\\/g, '\\\\'),
               ver: options.ver
             },
             templateString = JSON.stringify(nuspecCombined),
@@ -78,15 +89,39 @@ module.exports = function(grunt) {
             templateObj = JSON.parse(templateOutput),
             nuspecXml = xmlbuilder.create(templateObj).end({ pretty: true });
 
-        var nuspecTemp = path.join(tempDir, pkgName + '.nuspec');
-        grunt.file.write(nuspecTemp, nuspecXml);
+        var nuspecTemp = path.join(tempDir, [ pkgName, options.ver, 'nuspec' ].join('.')),
+            nuspecTempName = path.basename(nuspecTemp);
+        try {
+          grunt.file.write(nuspecTemp, nuspecXml);
+          grunt.log.ok('Saved "' + nuspecTempName + '" successfully.');
+        }
+        catch (e) { grunt.fatal('Unable to write nuspec file(s); Are you fighting with UAC?'); }
 
-        var configPkgName = pkgName.replace(/\./g, '');
-        grunt.config.set('nugetpack.' + configPkgName + ".src", nuspecTemp);
-        grunt.config.set('nugetpack.' + configPkgName + ".dest", options.dest);
-        grunt.task.run('nugetpack:' + configPkgName);
+        grunt.log.writeln('Packaging "' + nuspecTempName + '"...');
+        grunt.util.spawn({
+          cmd: options.nuget,
+          args: [ 'pack', nuspecTemp, '-OutputDirectory', options.dest, '-BasePath', options.src, '-Version', options.ver, '-Verbosity', 'detailed'],
+        }, function(error, result, code) {
+          grunt.log.debug(result);
+          if (error) {
+            var err = 'Error packaging "' + nuspecTempName + '": ' + error;
+            grunt.log.error(err);
+            callback(err);
+          } else {
+            grunt.log.ok('"' + nuspecTempName + '" created.');
+            callback();
+          }
+        });
       } else {
-        grunt.warn('pkg "' + pkgName + '" cannot be found.');
+        grunt.warn('Template for "' + pkgName + '" cannot be found.');
+      }
+    }, function(err) {
+      if (err) {
+        grunt.log.error(err);
+        done(false);
+      } else {
+        grunt.log.ok('Packages created!');
+        done();
       }
     });
   });

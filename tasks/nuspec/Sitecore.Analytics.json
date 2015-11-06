@@ -16,7 +16,7 @@
     "files": {
       "file": [
         {
-          "@src": "<%= src %>\\bin\\Sitecore.Analytics.dll",
+          "@src": "bin\\Sitecore.Analytics.dll",
           "@target": "lib/net45"
         }
       ]

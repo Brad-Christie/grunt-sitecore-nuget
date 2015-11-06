@@ -1,8 +1,8 @@
 {
   "package": {
     "metadata": {
-      "id": "Sitecore.Mvc",
-      "description": "Sitecore.Mvc",
+      "id": "Sitecore.Mvc.Analytics",
+      "description": "Sitecore.Mvc.Analytics",
       "tags": "sitecore mvc",
       "dependencies": {
         "dependency": [
@@ -16,7 +16,7 @@
     "files": {
       "file": [
         {
-          "@src": "<%= src %>\\bin\\Sitecore.Mvc.Analytics.dll",
+          "@src": "bin\\Sitecore.Mvc.Analytics.dll",
           "@target": "lib/net45"
         }
       ]

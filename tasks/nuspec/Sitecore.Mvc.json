@@ -20,7 +20,7 @@
     "files": {
       "file": [
         {
-          "@src": "<%= src %>\\bin\\Sitecore.Mvc.dll",
+          "@src": "bin\\Sitecore.Mvc.dll",
           "@target": "lib/net45"
         }
       ]
