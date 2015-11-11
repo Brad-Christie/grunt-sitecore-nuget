@@ -102,4 +102,9 @@ grunt.initConfig({
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
-_(Nothing yet)_
+
+* v0.2.0
+    * Updated to use NuGet.exe directly (removed `grunt-nuget` dependency)
+    * Runs code asynchronously (Added `async` dependency)
+    * Package specs (`.nuspec`) now saved as `<name>.<version>.nuspec`
+* v0.1.0 - Initial Release
