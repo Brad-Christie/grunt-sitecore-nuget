@@ -7,6 +7,10 @@
       "dependencies": {
         "dependency": [
           {
+            "@id": "Sitecore.Analytics",
+            "@version": "<%= ver %>"
+          },
+          {
             "@id": "Sitecore.Mvc",
             "@version": "<%= ver %>"
           }

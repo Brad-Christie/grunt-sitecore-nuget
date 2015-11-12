@@ -2,6 +2,10 @@
 
 > NuGet package builder for Sitecore instances.
 
+## About
+
+(Hopefully) makes developing in Sitecore with Visual Studio 2015 and npm/grunt integration easier by bunding the necessary binaries into NuGet packages for you. From there, define the project/solution's package source to this directory, and you're good-to-go.
+
 ## Getting Started
 This plugin requires Grunt `~0.4.5`
 
@@ -73,26 +77,34 @@ grunt.initConfig({
     sc81rtm: {
       options: {
         src: '/inetpub/wwwroot/sc81rev151003/Website',
-        dest: 'packages',
-        ver: '8.1.0.151003'
+        dest: 'sitecore',
+        ver: '8.1.151003'
       }
     }
   },
 });
 ```
 
-#### Custom
-In this example, we are only looking for the
+#### Multiple Instances
+In this example, we compile packages from multiple sitecore instances. Again, we're storign them in the project's `sitecore` directory.
 
 ```js
 grunt.initConfig({
   scNuget: {
     options: {
-      separator: ': ',
-      punctuation: ' !!!',
+      dest: 'sitecore'
     },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
+    sc81rtm: {
+      options: {
+        src: '/inetpub/wwwroot/sc81rev151003',
+        ver: '8.1.151003'
+      }
+    },
+    sc81rtt: {
+      options: {
+        src: '/inetpub/wwwroot/sc81rev150819',
+        ver: '8.1.150819'
+      }
     },
   },
 });
@@ -103,8 +115,13 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 
 ## Release History
 
+* v0.3.0
+    * Fixed dependency in `Sitecore.Mvc.Analytics` (missing `Sitecore.Analytics` dependency)
+    * Fixed example usage error in README
+    * Added more detail to README
 * v0.2.0
     * Updated to use NuGet.exe directly (removed `grunt-nuget` dependency)
     * Runs code asynchronously (Added `async` dependency)
     * Package specs (`.nuspec`) now saved as `<name>.<version>.nuspec`
-* v0.1.0 - Initial Release
+* v0.1.0
+    * Initial Release
