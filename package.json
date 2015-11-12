@@ -1,7 +1,7 @@
 {
   "name": "grunt-sitecore-nuget",
   "description": "NuGet package builder for Sitecore instances.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "homepage": "https://github.com/Brad-Christie/grunt-sitecore-nuget",
   "author": {
     "name": "Brad Christie",
