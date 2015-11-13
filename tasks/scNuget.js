@@ -22,13 +22,15 @@ module.exports = function(grunt) {
 
   grunt.registerMultiTask('scNuget', 'NuGet package builder for Sitecore instances.', function() {
 
-    var done = this.async(),
-        options = this.options({
+    var self = this,
+        done = self.async(),
+        options = self.options({
           src: '',
           dest: 'sitecore',
           ver: '0.1.0-beta',
           pkgs: [ 'Sitecore.Kernel', 'Sitecore.Analytics', 'Sitecore.Mvc', 'Sitecore.Mvc.Analytics' ],
-          nuget: nugetExe
+          nuget: nugetExe,
+          feed: ''
         });
 
     // validation
@@ -46,6 +48,21 @@ module.exports = function(grunt) {
     }
     if (!options.pkgs) {
       grunt.fatal('pkgs missing or invalid (must be a valid array).');
+    }
+    if (options.feed) {
+      if (_.isString(options.feed)) {
+        options.feed = {
+          url: options.feed
+        };
+      } else if (!_.isPlainObject(options.feed)) {
+        grunt.fatal('feed must be a string or an object.');
+      } else if (!options.feed.url) {
+        grunt.fatal('feed.url missing or invalid.');
+      }
+      var normalizedFeed = options.feed.url.toLowerCase();
+      if (normalizedFeed.indexOf('nuget.org') > 0) {
+        grunt.fatal('feed.url cannot be a public repository (such as nuget.org)');
+      }
     }
 
     // sanitization
@@ -98,9 +115,13 @@ module.exports = function(grunt) {
         catch (e) { grunt.fatal('Unable to write nuspec file(s); Are you fighting with UAC?'); }
 
         grunt.log.writeln('Packaging "' + nuspecTempName + '"...');
+        var packArgs = [ 'pack', nuspecTemp, '-OutputDirectory', options.dest, '-BasePath', options.src, '-Version', options.ver ];
+        if (self.options('verbose')) {
+          packArgs = packArgs.concat([ '-Verbosity', 'detailed' ]);
+        }
         grunt.util.spawn({
           cmd: options.nuget,
-          args: [ 'pack', nuspecTemp, '-OutputDirectory', options.dest, '-BasePath', options.src, '-Version', options.ver, '-Verbosity', 'detailed'],
+          args: packArgs,
         }, function(error, result, code) {
           grunt.log.debug(result);
           if (error) {
@@ -108,8 +129,38 @@ module.exports = function(grunt) {
             grunt.log.error(err);
             callback(err);
           } else {
-            grunt.log.ok('"' + nuspecTempName + '" created.');
-            callback();
+            var nupkgNameRe = /^Successfully\screated\spackage\s'(.+?)'/m,
+                nupkgPath = (''+result).match(nupkgNameRe)[1],
+                nupkgName = path.basename(nupkgPath);
+            grunt.log.ok('"' + nupkgName + '" created.');
+
+            if (options.feed) {
+              grunt.log.writeln('Publishing "' + nupkgName + '" to "' + options.feed.url + '".');
+              var pushArgs = [ 'push', nupkgPath, '-Source', options.feed.url ];
+              if (options.feed.apiKey) {
+                pushArgs = pushArgs.concat([ '-ApiKey', options.feed.apiKey ]);
+              }
+              if (self.options('verbose')) {
+                pushArgs = pushArgs.concat([ '-Verbosity', 'detailed' ]);
+              }
+              grunt.util.spawn({
+                cmd: options.nuget,
+                args: pushArgs
+              }, function(error2, result2, code2) {
+                grunt.log.debug(result2);
+                if (error2) {
+                  var err = 'Error publishing "' + nupkgName + '": ' + error;
+                  grunt.log.error(err);
+                  callback(err);
+                } else {
+                  grunt.log.ok('Successfully published "' + nupkgName + '".');
+                  callback();
+                }
+              });
+            }
+            else {
+              callback();
+            }
           }
         });
       } else {
@@ -120,7 +171,7 @@ module.exports = function(grunt) {
         grunt.log.error(err);
         done(false);
       } else {
-        grunt.log.ok('Packages created!');
+        grunt.log.ok('Sitecore packages created successfully.');
         done();
       }
     });

@@ -31,17 +31,57 @@ module.exports = function(grunt) {
     // Configuration to be run (and then tested).
     scNuget: {
       options: {
-        src: 'test/sitecore',
-        dest: 'tmp'
       },
-      sc81rti: {
+
+      /*missing_src: {
+        options: { }
+      },
+      invalid_src: {
         options: {
-          ver: '8.1.150819'
+          src: '/a/b/c/d/e/f/g'
         }
       },
-      sc81rtm: {
+      missing_dest: {
         options: {
+          src: 'test/sitecore',
+          dest: '', // override default
+        }
+      },
+      missing_ver: {
+        options: {
+          src: 'test/sitecore',
+          ver: '' // override default
+        }
+      },
+      invalid_version: {
+        options: {
+          src: 'test/sitecore',
+          ver: 'abc'
+        }
+      },
+      invalid_push_target: {
+        options: {
+          ver: '0.0.1',
+          feed: 'http://nuget.org/'
+        }
+      },*/
+
+      simple_package: {
+        options: {
+          src: 'test/sitecore',
+          dest: 'tmp',
           ver: '8.1.151003'
+        }
+      },
+      pack_and_push: {
+        options: {
+          src: 'test/sitecore',
+          dest: 'tmp',
+          ver: '8.1.150819',
+          feed: {
+            url: 'http://nuget.sitecore.local/',
+            apiKey: 'EE6EC91406464D23B0E8040E45DBC0F5'
+          }
         }
       }
     },
@@ -60,7 +100,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-nodeunit');
-  grunt.loadNpmTasks('grunt-nuget');
 
   // Whenever the "test" task is run, first clean the "tmp" dir, then run this
   // plugin's task(s), then test the result.
